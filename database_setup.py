@@ -162,8 +162,8 @@ def main_database_setup(args):
 
 
     if not os.path.exists(os.path.join(args.save_dir, 'netvlad_feats.npy')):
-        print(">> [Database] Global Feature Generation...")
 
+        print(">> [Database] Global Feature Generation...")
         tf.reset_default_graph()
         image_batch = tf.placeholder(dtype=tf.float32, shape=[None, None, None, 3])
 

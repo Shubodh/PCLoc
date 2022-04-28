@@ -559,6 +559,14 @@ def rootsift(x):
     return l1_norm
 
 def scan2imgfeat_projection(pose, feat_pth, camera_parm, num_kpts=4096):
+    """shub-documentation:
+    Current understanding (need to confirm by printing outputs):
+    feat_pth / scan_feat / ptcloud is actually 3D (global coord system) keypoints in the entire map.
+    In this function, we are finding those keypoints only visible from given `pose`.
+    Output:    kpts, desc, score, ptcloud
+    which are basically 2D image kpts, desc, (score), and 3D kpts i.e. ptcloud.
+    YET-to-understand: Last part - np.argsort(score)[::-1][:num_kpts]
+    """
 
     with open(feat_pth[0], 'rb') as handle:
         scan_feat = pickle.load(handle)

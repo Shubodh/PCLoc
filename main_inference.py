@@ -292,6 +292,16 @@ def main_evaluation(query_dir, query_idx, db_dir, num_topk_ret, num_topk_pe, num
         pred_kpts, pred_desc, pred_score, pred_xyz = scan2imgfeat_projection(pred_pose, pcfeat_pth, camera_parm, num_kpts=args.max_keypoints)
 
         data = convert_superglue_db_format(inp0, pred0, pred_kpts, pred_desc, pred_score, device)
+        """refinement -- shub-documentation:
+        Current understanding (need to confirm by printing outputs):
+        1. At this point, we have 
+            data, pred0, (This is query img, keypoint and descriptor)
+            pred_kpts, pred_desc  (ref keypoint and descriptor)
+            and pred_xyz. (global system 3D xyz points)
+        2. So what's remaining is superglue matching. That's what `refinement` below exactly does.
+        3. Basically, finds matches between kpts0, kpts1. Using this matching info, `refinement`
+            outputs kpts0 and corresponding 3d points, i.e. kpts1_xyz.
+        """
         mkpts0, mkpts_xyz = refinement(data, pred_xyz)
 
 
