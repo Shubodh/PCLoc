@@ -25,6 +25,7 @@ parser.add_argument('--save_dir', default='/scratch/saishubodh/PCLoc_saved/ICCV_
 parser.add_argument('--nms_radius', type=int, default=4, help='SuperPoint Non Maximum Suppression (NMS) radius (Must be positive)')
 parser.add_argument('--keypoint_threshold', type=float, default=0.005, help='SuperPoint keypoint detector confidence threshold')
 parser.add_argument('--max_keypoints', type=int, default=3000, help='Maximum number of keypoints detected by Superpoint (-1 keeps all keypoints)')
+parser.add_argument('--dry_run', default=True, choices=('True','False'), help='True: Dry run, False: Actually saving everything needed.')
 args = parser.parse_args()
 
 class data_loader:
@@ -107,6 +108,9 @@ class data_loader:
 
 
 def main_database_setup(args):
+    dry_run = args.dry_run
+    if dry_run:
+        print("IMPORTANT NOTE: Running dry_run. If you actually want to run this file to save stuff, set dry_run to False.")
 
     print(">> [Database] Converting Path and Formats for Databases...")
 
@@ -124,7 +128,8 @@ def main_database_setup(args):
                 i_cutout_list.sort()
                 for i_img_name in i_cutout_list:
                     db_img_list.append(i_img_name)
-                    f.write(i_img_name + '\n')
+                    if not dry_run:
+                        f.write(i_img_name + '\n')
 
     save_align_txtname = os.path.join(args.save_dir, 'pth_aligns.txt')
     with open(save_align_txtname, 'w') as f:
@@ -132,7 +137,8 @@ def main_database_setup(args):
             align_mat_pth = glob.glob(os.path.join(args.db_dir, 'database/alignments', os.path.basename(bld_pth), 'transformations/*'))
             align_mat_pth.sort()
             for align_pth in align_mat_pth:
-                f.write(align_pth + '\n')
+                if not dry_run:
+                    f.write(align_pth + '\n')
 
     save_scan_dir = os.path.join(args.save_dir, 'scans_npy')
     save_scan_txtname = os.path.join(args.save_dir, 'pth_scans.txt')
@@ -147,20 +153,22 @@ def main_database_setup(args):
             save_scan_pth = os.path.join(save_scan_dir, bld)
             if not os.path.exists(save_scan_pth): os.makedirs(save_scan_pth)
 
-            #for scan_name in tqdm(scan_list):
-            for scan_name in (scan_list):
+            #for scan_name in tqdm(scan_list): #tqdm causing alignment issues while printing output to screen
+            if not dry_run:
+                for scan_name in (scan_list):
 
-                save_fname = os.path.join(save_scan_pth, os.path.basename(scan_name) + '.npy')
-                print(f"DEBUG 1: {save_fname}")
-                f.write(save_fname + '\n')
+                    save_fname = os.path.join(save_scan_pth, os.path.basename(scan_name) + '.npy')
+                    # print(f"DEBUG 1: {save_fname}")
+                    f.write(save_fname + '\n')
 
-                scan_mat = io.loadmat(scan_name)
-                scan_data = scan_mat['A']
-                scan_xyz = np.concatenate([scan_data[0, 0], scan_data[0, 1], scan_data[0, 2]], axis=1).astype(np.float16)
-                scan_rgb = np.concatenate([scan_data[0, 4], scan_data[0, 5], scan_data[0, 6]], axis=1).astype(np.float16)
+                    scan_mat = io.loadmat(scan_name)
+                    scan_data = scan_mat['A']
+                    scan_xyz = np.concatenate([scan_data[0, 0], scan_data[0, 1], scan_data[0, 2]], axis=1).astype(np.float16)
+                    scan_rgb = np.concatenate([scan_data[0, 4], scan_data[0, 5], scan_data[0, 6]], axis=1).astype(np.float16)
 
-                data = np.concatenate([scan_xyz, scan_rgb], axis=1)
-                np.save(save_fname, data)
+                    data = np.concatenate([scan_xyz, scan_rgb], axis=1)
+
+                    np.save(save_fname, data)
 
     print(">> Converting Format Completed...")
 
@@ -272,9 +280,10 @@ def main_database_setup(args):
                 feat_cutout['descriptors'] = rm_descrptors
                 feat_cutout['pts_xyz'] = rm_xyz
 
-                save_cutout_feat_fname = os.path.join(local_feat_dir, 'local_feat_{:05}.pkl'.format(feat_idx))
-                with open(save_cutout_feat_fname, 'wb') as handle:
-                    pickle.dump(feat_cutout, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                if not dry_run:
+                    save_cutout_feat_fname = os.path.join(local_feat_dir, 'local_feat_{:05}.pkl'.format(feat_idx))
+                    with open(save_cutout_feat_fname, 'wb') as handle:
+                        pickle.dump(feat_cutout, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 feat_idx += 1
 
                 scan_desc.append(rm_descrptors)
@@ -291,9 +300,10 @@ def main_database_setup(args):
             pc_feat['scores'] = total_score
 
 
-            save_pcfeat_fname = os.path.join(pc_feat_dir, 'pcfeat_{:05}.pkl'.format(pc_idx))
-            with open(save_pcfeat_fname, 'wb') as handle:
-                pickle.dump(pc_feat, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            if not dry_run:
+                save_pcfeat_fname = os.path.join(pc_feat_dir, 'pcfeat_{:05}.pkl'.format(pc_idx))
+                with open(save_pcfeat_fname, 'wb') as handle:
+                    pickle.dump(pc_feat, handle, protocol=pickle.HIGHEST_PROTOCOL)
             pc_idx += 1
     print(">> Save Local Feature and PC Feature Completed...")
 
