@@ -18,8 +18,10 @@ from utils.load_WUSTL_transformation import load_transformation
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--db_dir', default='/mnt/hdd1/Dataset/InLoc_dataset', help='Path to Inloc dataset')
-parser.add_argument('--save_dir', default='/mnt/hdd2/Working/ICCV_TEST', help='Path to save database features (Output)')
+#parser.add_argument('--db_dir', default='/mnt/hdd1/Dataset/InLoc_dataset', help='Path to Inloc dataset')
+parser.add_argument('--db_dir', default='/scratch/saishubodh/InLoc_dataset', help='Path to Inloc dataset')
+#parser.add_argument('--save_dir', default='/mnt/hdd2/Working/ICCV_TEST', help='Path to save database features (Output)')
+parser.add_argument('--save_dir', default='/scratch/saishubodh/PCLoc_saved/ICCV_TEST', help='Path to save database features (Output)')
 parser.add_argument('--nms_radius', type=int, default=4, help='SuperPoint Non Maximum Suppression (NMS) radius (Must be positive)')
 parser.add_argument('--keypoint_threshold', type=float, default=0.005, help='SuperPoint keypoint detector confidence threshold')
 parser.add_argument('--max_keypoints', type=int, default=3000, help='Maximum number of keypoints detected by Superpoint (-1 keeps all keypoints)')
@@ -145,9 +147,11 @@ def main_database_setup(args):
             save_scan_pth = os.path.join(save_scan_dir, bld)
             if not os.path.exists(save_scan_pth): os.makedirs(save_scan_pth)
 
-            for scan_name in tqdm(scan_list):
+            #for scan_name in tqdm(scan_list):
+            for scan_name in (scan_list):
 
                 save_fname = os.path.join(save_scan_pth, os.path.basename(scan_name) + '.npy')
+                print(f"DEBUG 1: {save_fname}")
                 f.write(save_fname + '\n')
 
                 scan_mat = io.loadmat(scan_name)

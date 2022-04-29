@@ -36,9 +36,12 @@ time_stamp = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--query_dir', default='/mnt/hdd1/Dataset/InLoc_dataset/query/iphone7', help='Path to query directory')
-parser.add_argument('--db_dir', default='/mnt/hdd2/Working/ICCV_TEST')
-parser.add_argument('--log_dir', default='./log')
+#parser.add_argument('--query_dir', default='/mnt/hdd1/Dataset/InLoc_dataset/query/iphone7', help='Path to query directory')
+parser.add_argument('--query_dir', default='/scratch/saishubodh/InLoc_dataset/query/iphone7', help='Path to query directory')
+#parser.add_argument('--db_dir', default='/mnt/hdd2/Working/ICCV_TEST')
+parser.add_argument('--db_dir', default='/scratch/saishubodh/PCLoc_saved/ICCV_TEST')
+#parser.add_argument('--log_dir', default='./log')
+parser.add_argument('--log_dir', default='/scratch/saishubodh/PCLoc_saved/log')
 
 parser.add_argument('--num_thread', default=5)
 parser.add_argument('--query_idx', default=5, type=int)
